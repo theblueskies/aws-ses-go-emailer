@@ -16,10 +16,11 @@ const (
 
 // SESWorker is used to send the actual email. It implements the EmailStore
 type SESWorker struct {
-	Region    string
-	AccessKey string
-	SecretKey string
-	Ses       sesiface.SESAPI
+	SenderEmail string
+	Region      string
+	AccessKey   string
+	SecretKey   string
+	Ses         sesiface.SESAPI
 }
 
 // SendEmail is a wrapper around the AWS SES object and calls the SES.SendEmail method
@@ -27,7 +28,7 @@ func (s *SESWorker) SendEmail(e *Email) error {
 	input := &ses.SendEmailInput{
 		Destination: &ses.Destination{
 			ToAddresses: []*string{
-				aws.String("druhin.bala@gmail.com"),
+				aws.String(e.From),
 			},
 		},
 		Message: &ses.Message{

@@ -52,7 +52,6 @@ func TestHandleEmailFail(t *testing.T) {
 	}
 	r := GetRouter(s)
 
-	// eJSON, _ := json.Marshal(e)
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("POST", "/email", nil)
 	r.ServeHTTP(w, req)
@@ -85,6 +84,7 @@ func TestHealth(t *testing.T) {
 	assert.Equal(t, "ok", b.Status)
 }
 
+// mockSES is used to mock the SES object
 type mockSES struct {
 	sesiface.SESAPI
 	output    *ses.SendEmailOutput
@@ -93,6 +93,7 @@ type mockSES struct {
 	callCount int
 }
 
+// SendEmail is the implemented method from the interface sesiface.SESAPI for mockSES struct
 func (m *mockSES) SendEmail(*ses.SendEmailInput) (*ses.SendEmailOutput, error) {
 	m.called = true
 	m.callCount++
