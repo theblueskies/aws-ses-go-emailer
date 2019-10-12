@@ -14,11 +14,6 @@ const (
 	SECRET_KEY = "r/S/v3+FtZo8wJc2r0KXipGlNLplw+WqmncFbE9z"
 )
 
-// EmailStore defines the interface for sending the email
-type EmailStore interface {
-	SendEmail(e *Email) error
-}
-
 // SESWorker is used to send the actual email. It implements the EmailStore
 type SESWorker struct {
 	Region    string

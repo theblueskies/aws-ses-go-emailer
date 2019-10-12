@@ -19,7 +19,7 @@ type Response struct {
 }
 
 // GetRouter returns a router with the registered endpoints
-func GetRouter(s *SESWorker) *gin.Engine {
+func GetRouter(s EmailStore) *gin.Engine {
 	r := gin.Default()
 	// sesWorker := NewSESWorker(sesRegion, sesAccessKey, sesSecretKey)
 
@@ -33,7 +33,7 @@ func GetRouter(s *SESWorker) *gin.Engine {
 }
 
 // HandleEmail handles the POST body and uses AWS SES to send the email
-func HandleEmail(s *SESWorker) gin.HandlerFunc {
+func HandleEmail(s EmailStore) gin.HandlerFunc {
 	fn := func(c *gin.Context) {
 		var email Email
 		response := Response{
