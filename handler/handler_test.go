@@ -7,11 +7,20 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/aws/aws-sdk-go/service/ses"
+	"github.com/aws/aws-sdk-go/service/ses/sesiface"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestHandleEmailSuccess(t *testing.T) {
-	r := GetRouter()
+	mockSES := &mockSES{}
+	s := &SESWorker{
+		Region:    "us-east-1",
+		AccessKey: "asdfa",
+		SecretKey: "asdfa",
+		Ses:       mockSES,
+	}
+	r := GetRouter(s)
 	e := Email{
 		Name:    "some name",
 		From:    "email@sender.org",
@@ -29,11 +38,19 @@ func TestHandleEmailSuccess(t *testing.T) {
 
 	assert.Equal(t, 200, w.Code)
 	assert.Equal(t, "success", b.Status)
-
+	assert.Equal(t, true, mockSES.called)
+	assert.Equal(t, 1, mockSES.callCount)
 }
 
 func TestHandleEmailFail(t *testing.T) {
-	r := GetRouter()
+	mockSES := &mockSES{}
+	s := &SESWorker{
+		Region:    "us-east-1",
+		AccessKey: "asdfa",
+		SecretKey: "asdfa",
+		Ses:       mockSES,
+	}
+	r := GetRouter(s)
 
 	// eJSON, _ := json.Marshal(e)
 	w := httptest.NewRecorder()
@@ -45,11 +62,18 @@ func TestHandleEmailFail(t *testing.T) {
 
 	assert.Equal(t, 400, w.Code)
 	assert.Equal(t, "error", b.Status)
-
+	assert.Equal(t, false, mockSES.called)
 }
 
 func TestHealth(t *testing.T) {
-	r := GetRouter()
+	mockSES := &mockSES{}
+	s := &SESWorker{
+		Region:    "us-east-1",
+		AccessKey: "asdfa",
+		SecretKey: "asdfa",
+		Ses:       mockSES,
+	}
+	r := GetRouter(s)
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", "/health", nil)
 	r.ServeHTTP(w, req)
@@ -59,4 +83,18 @@ func TestHealth(t *testing.T) {
 
 	assert.Equal(t, 200, w.Code)
 	assert.Equal(t, "ok", b.Status)
+}
+
+type mockSES struct {
+	sesiface.SESAPI
+	output    *ses.SendEmailOutput
+	err       error
+	called    bool
+	callCount int
+}
+
+func (m *mockSES) SendEmail(*ses.SendEmailInput) (*ses.SendEmailOutput, error) {
+	m.called = true
+	m.callCount++
+	return m.output, m.err
 }

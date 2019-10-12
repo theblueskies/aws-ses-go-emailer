@@ -1,6 +1,8 @@
 package handler
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+)
 
 // Email is the struct that defines the user email message
 type Email struct {
@@ -17,34 +19,39 @@ type Response struct {
 }
 
 // GetRouter returns a router with the registered endpoints
-func GetRouter() *gin.Engine {
+func GetRouter(s *SESWorker) *gin.Engine {
 	r := gin.Default()
+	// sesWorker := NewSESWorker(sesRegion, sesAccessKey, sesSecretKey)
 
 	r.GET("/health", func(c *gin.Context) {
 		c.JSON(200, gin.H{
 			"status": "ok",
 		})
 	})
-	r.POST("/email", HandleEmail)
+	r.POST("/email", HandleEmail(s))
 	return r
 }
 
 // HandleEmail handles the POST body and uses AWS SES to send the email
-func HandleEmail(c *gin.Context) {
-	var email Email
-	response := Response{
-		Status:  "success",
-		Message: "success",
-	}
-	err := c.ShouldBindJSON(&email)
-	if err != nil {
-		response = Response{
-			Status:  "error",
-			Message: err.Error(),
+func HandleEmail(s *SESWorker) gin.HandlerFunc {
+	fn := func(c *gin.Context) {
+		var email Email
+		response := Response{
+			Status:  "success",
+			Message: "success",
 		}
-		c.JSON(400, response)
+		err := c.ShouldBindJSON(&email)
+		if err != nil {
+			response = Response{
+				Status:  "error",
+				Message: err.Error(),
+			}
+			c.JSON(400, response)
+			return
+		}
+		c.JSON(200, response)
+		go s.SendEmail(&email)
 		return
 	}
-	c.JSON(200, response)
-	return
+	return gin.HandlerFunc(fn)
 }
