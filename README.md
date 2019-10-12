@@ -4,4 +4,5 @@ This is an emailer app. It currently sends emails through:
 1. AWS SES (Simple Email Service)
 
 It can be further extended to be used with Sendgrid, Mailchimp or other mail clients
-by implementing the interface: ```EmailStore```
+by implementing the interface:    
+   * ```EmailStore```
