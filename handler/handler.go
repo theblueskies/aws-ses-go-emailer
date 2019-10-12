@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"fmt"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -12,16 +14,23 @@ type Email struct {
 	Body    string `form:"body" json:"body"`
 }
 
+// ComposeText puts together the Name, From and Body into one string to send in the final email
+func (e *Email) ComposeText() string {
+	return fmt.Sprintf("Name: %s \n \n Email: %s \n \n Message: %s ", e.Name, e.From, e.Body)
+}
+
 // Response expected from service
 type Response struct {
 	Status  string `form:"status" json:"status"`
 	Message string `form:"message" json:"message"`
 }
 
+// DefaultMessage is what we make the subject of the email if there is no subject present
+const DefaultMessage = "Message from DPA4u"
+
 // GetRouter returns a router with the registered endpoints
 func GetRouter(s EmailStore) *gin.Engine {
 	r := gin.Default()
-	// sesWorker := NewSESWorker(sesRegion, sesAccessKey, sesSecretKey)
 
 	r.GET("/health", func(c *gin.Context) {
 		c.JSON(200, gin.H{
@@ -51,7 +60,13 @@ func HandleEmail(s EmailStore) gin.HandlerFunc {
 			return
 		}
 		c.JSON(200, response)
-		go s.SendEmail(&email)
+		if email.Subject == "" {
+			email.Subject = DefaultMessage
+		}
+		// Only send the email if there is a body
+		if email.Body != "" {
+			go s.SendEmail(&email)
+		}
 		return
 	}
 	return gin.HandlerFunc(fn)

@@ -9,18 +9,14 @@ import (
 	"github.com/aws/aws-sdk-go/service/ses/sesiface"
 )
 
-const (
-	ACCESS_KEY = "AKIA22BVYOS7LVPNHZ6F"
-	SECRET_KEY = "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"
-)
-
 // SESWorker is used to send the actual email. It implements the EmailStore
 type SESWorker struct {
-	SenderEmail string
-	Region      string
-	AccessKey   string
-	SecretKey   string
-	Ses         sesiface.SESAPI
+	RecipientEmail string
+	SenderEmail    string
+	Region         string
+	AccessKey      string
+	SecretKey      string
+	Ses            sesiface.SESAPI
 }
 
 // SendEmail is a wrapper around the AWS SES object and calls the SES.SendEmail method
@@ -28,7 +24,7 @@ func (s *SESWorker) SendEmail(e *Email) error {
 	input := &ses.SendEmailInput{
 		Destination: &ses.Destination{
 			ToAddresses: []*string{
-				aws.String(e.From),
+				aws.String("druhin.bala@gmail.com"),
 			},
 		},
 		Message: &ses.Message{
@@ -42,7 +38,7 @@ func (s *SESWorker) SendEmail(e *Email) error {
 				// },
 				Text: &ses.Content{
 					Charset: aws.String("UTF-8"),
-					Data:    aws.String(e.Body),
+					Data:    aws.String(e.ComposeText()),
 				},
 			},
 			Subject: &ses.Content{
@@ -50,7 +46,7 @@ func (s *SESWorker) SendEmail(e *Email) error {
 				Data:    aws.String(e.Subject),
 			},
 		},
-		Source: aws.String("bladerunneraws@gmail.com"),
+		Source: aws.String(s.SenderEmail),
 	}
 
 	result, err := s.Ses.SendEmail(input)
