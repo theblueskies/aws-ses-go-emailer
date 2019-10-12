@@ -44,3 +44,8 @@
 [prune]
   go-tests = true
   unused-packages = true
+
+[metadata.heroku]
+  root-package = "github.com/theblueskies/aws-ses-go-emailer"
+  ensure = true
+  install = [ "./..." ]
