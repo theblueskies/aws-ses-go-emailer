@@ -13,13 +13,15 @@ func TestSendEmail(t *testing.T) {
 		Subject: "the best subject",
 		Body:    "got a body",
 	}
-	mockSes := &mockSES{}
+
 	s := &SESWorker{
 		Region:    "us-east-1",
 		AccessKey: "asdfa",
 		SecretKey: "asdfa",
-		Ses:       mockSes,
+		Ses:       &mockSES{},
 	}
 	err := s.SendEmail(e)
 	assert.Nil(t, err)
 }
+
+//@TODO: Write tests for the error cases

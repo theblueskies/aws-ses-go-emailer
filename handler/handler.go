@@ -25,7 +25,8 @@ func GetRouter(s EmailStore) *gin.Engine {
 
 	r.GET("/health", func(c *gin.Context) {
 		c.JSON(200, gin.H{
-			"status": "ok",
+			"status":  "ok",
+			"message": "email app online",
 		})
 	})
 	r.POST("/email", HandleEmail(s))
@@ -38,7 +39,7 @@ func HandleEmail(s EmailStore) gin.HandlerFunc {
 		var email Email
 		response := Response{
 			Status:  "success",
-			Message: "success",
+			Message: "email app online",
 		}
 		err := c.ShouldBindJSON(&email)
 		if err != nil {
