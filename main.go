@@ -1,7 +1,9 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
+	"log"
 	"os"
 	"strings"
 
@@ -18,6 +20,12 @@ import (
 const PORT = ":5000"
 
 func main() {
+	var (
+		buf    bytes.Buffer
+		logger = log.New(&buf, "logger: ", log.Lshortfile)
+	)
+	logger.Println("Hello, log file!")
+
 	viper.BindEnv("SES_REGION")
 	viper.BindEnv("SES_ACCESS_KEY")
 	viper.BindEnv("SES_SECRET_KEY")
@@ -31,7 +39,8 @@ func main() {
 	recipientEmail := viper.GetString("RECIPIENT_EMAIL")
 	port := viper.GetString("PORT")
 
-	fmt.Println("PORT from heroku: ", port)
+	logger.Println("PORT from heroku: ", port)
+
 	if port != "" {
 		if port[0] != ':' {
 			port = ":" + port
@@ -47,7 +56,7 @@ func main() {
 		gin.SetMode(gin.ReleaseMode)
 	}
 	r := handler.GetRouter(sesWorker)
-	r.Run(port) // listen and serve on 0.0.0.0:8080
+	r.Run(port)
 }
 
 // NewSESWorker returns a new instance of an SESWorker
