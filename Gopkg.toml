@@ -46,5 +46,5 @@
   unused-packages = true
 
 [metadata.heroku]
-  root-package = "aws-ses-go-emailer"
+  root-package = "github.com/theblueskies/aws-ses-go-emailer"
   install = [ "./..." ]
