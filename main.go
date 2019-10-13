@@ -22,12 +22,23 @@ func main() {
 	viper.BindEnv("SES_ACCESS_KEY")
 	viper.BindEnv("SES_SECRET_KEY")
 	viper.BindEnv("SENDER_EMAIL")
+	viper.BindEnv("PORT")
 
 	sesRegion := viper.GetString("SES_REGION")
 	sesAccessKey := viper.GetString("SES_ACCESS_KEY")
 	sesSecretKey := viper.GetString("SES_SECRET_KEY")
 	senderEmail := viper.GetString("SENDER_EMAIL")
 	recipientEmail := viper.GetString("RECIPIENT_EMAIL")
+	port := viper.GetString("PORT")
+
+	fmt.Println("PORT from heroku: ", port)
+	if port != "" {
+		if port[0] != ':' {
+			port = ":" + port
+		}
+	} else {
+		panic(fmt.Errorf("No port set"))
+	}
 
 	sesWorker := NewSESWorker(sesRegion, sesAccessKey, sesSecretKey, senderEmail, recipientEmail)
 
@@ -36,7 +47,7 @@ func main() {
 		gin.SetMode(gin.ReleaseMode)
 	}
 	r := handler.GetRouter(sesWorker)
-	r.Run(PORT) // listen and serve on 0.0.0.0:8080
+	r.Run(port) // listen and serve on 0.0.0.0:8080
 }
 
 // NewSESWorker returns a new instance of an SESWorker
