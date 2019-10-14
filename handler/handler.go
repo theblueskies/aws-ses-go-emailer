@@ -52,7 +52,7 @@ func HandleEmail(s EmailStore) gin.HandlerFunc {
 			Status:  "success",
 			Message: "email app online",
 		}
-		err := c.ShouldBindJSON(&email)
+		err := c.ShouldBind(&email)
 		if err != nil {
 			response = Response{
 				Status:  "error",

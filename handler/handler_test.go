@@ -1,10 +1,12 @@
 package handler
 
 import (
-	"bytes"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
+	"strconv"
+	"strings"
 	"testing"
 
 	"github.com/aws/aws-sdk-go/service/ses"
@@ -12,7 +14,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestHandleEmailSuccess(t *testing.T) {
+func TestHandleEmailSuccessFormData(t *testing.T) {
 	mockSES := &mockSES{}
 	s := &SESWorker{
 		Region:    "us-east-1",
@@ -21,16 +23,17 @@ func TestHandleEmailSuccess(t *testing.T) {
 		Ses:       mockSES,
 	}
 	r := GetRouter(s)
-	e := Email{
-		Name:    "some name",
-		From:    "email@sender.org",
-		Subject: "the best subject",
-		Body:    "got a body",
-	}
 
-	eJSON, _ := json.Marshal(e)
+	v := url.Values{}
+	v.Set("name", "Ava")
+	v.Add("from", "email@sender.org")
+	v.Add("subject", "the best subject")
+	v.Add("body", "got a body")
+
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("POST", "/email", bytes.NewBuffer(eJSON))
+	req, _ := http.NewRequest("POST", "/email", strings.NewReader(v.Encode()))
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+	req.Header.Add("Content-Length", strconv.Itoa(len(v.Encode())))
 	r.ServeHTTP(w, req)
 
 	var b Response
