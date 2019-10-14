@@ -30,6 +30,7 @@ func main() {
 	viper.BindEnv("SES_ACCESS_KEY")
 	viper.BindEnv("SES_SECRET_KEY")
 	viper.BindEnv("SENDER_EMAIL")
+	viper.BindEnv("RECIPIENT_EMAIL")
 	viper.BindEnv("PORT")
 
 	sesRegion := viper.GetString("SES_REGION")
