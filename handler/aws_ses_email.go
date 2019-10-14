@@ -24,7 +24,7 @@ func (s *SESWorker) SendEmail(e *Email) error {
 	input := &ses.SendEmailInput{
 		Destination: &ses.Destination{
 			ToAddresses: []*string{
-				aws.String("druhin.bala@gmail.com"),
+				aws.String(s.RecipientEmail),
 			},
 		},
 		Message: &ses.Message{
