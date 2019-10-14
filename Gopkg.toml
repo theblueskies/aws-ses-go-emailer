@@ -41,6 +41,10 @@
   name = "github.com/stretchr/testify"
   version = "1.4.0"
 
+[[constraint]]
+  name = "github.com/gin-contrib/cors"
+  version = "1.3.0"
+
 [prune]
   go-tests = true
   unused-packages = true

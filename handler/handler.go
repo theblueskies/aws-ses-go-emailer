@@ -3,6 +3,7 @@ package handler
 import (
 	"fmt"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
@@ -31,7 +32,8 @@ const DefaultMessage = "Message from DPA4u"
 // GetRouter returns a router with the registered endpoints
 func GetRouter(s EmailStore) *gin.Engine {
 	r := gin.Default()
-
+	// config := cors.DefaultConfig()
+	r.Use(cors.Default())
 	r.GET("/health", func(c *gin.Context) {
 		c.JSON(200, gin.H{
 			"status":  "ok",

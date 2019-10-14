@@ -56,6 +56,7 @@ func main() {
 		gin.SetMode(gin.ReleaseMode)
 	}
 	r := handler.GetRouter(sesWorker)
+
 	r.Run(port)
 }
 
