@@ -1,6 +1,10 @@
 # aws-ses-go-emailer
 
-This is an emailer app. It currently sends emails through:
+<img src="assets/mailman-gopher.png" width="30%">
+
+## This is an emailer app. 
+
+It currently sends emails through:
 1. AWS SES (Simple Email Service)
 
 Note: It expects FORM data and not JSON data.
